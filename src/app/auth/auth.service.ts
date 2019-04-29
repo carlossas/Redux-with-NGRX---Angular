@@ -28,6 +28,7 @@ import { SetUserAction } from './auth.actions';
 export class AuthService {
 
   private user_subscription: Subscription = new Subscription();
+  private usuario: User;
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -37,7 +38,7 @@ export class AuthService {
   ) { }
 
 
-  initAuthListener() {
+  public initAuthListener() {
 
     this.afAuth.authState.subscribe((user: firebase.User) => {
 
@@ -48,12 +49,11 @@ export class AuthService {
 
           const newUser = new User(usuario);
           this.store.dispatch(new SetUserAction(newUser));
-
-          console.log("Usuario Doc -->", newUser);
-
-
+          this.usuario = newUser;
+          console.log("Usuario Doc -->", this.usuario);
         });
       } else {
+        this.usuario = null;
         this.user_subscription.unsubscribe();
       }
 
@@ -61,8 +61,12 @@ export class AuthService {
 
   }
 
+  public getUsuario() {
+    return ({ ...this.usuario });
+  }
 
-  crearUsuario(nombre: string, email: string, password: string) {
+
+  public crearUsuario(nombre: string, email: string, password: string) {
 
     this.store.dispatch(new ActivarLoadingAction());
 
@@ -97,7 +101,7 @@ export class AuthService {
   }
 
 
-  login(email: string, password: string) {
+  public login(email: string, password: string) {
 
     this.store.dispatch(new ActivarLoadingAction());
 
@@ -119,7 +123,7 @@ export class AuthService {
 
   }
 
-  logout() {
+  public logout() {
     this.afAuth.auth.signOut();
     setTimeout(() => {
       this.router.navigate(['/login']);
@@ -127,7 +131,7 @@ export class AuthService {
   }
 
 
-  isAuth() {
+  public isAuth() {
     return this.afAuth.authState
       .pipe(
         map(fbUser => {

@@ -9,7 +9,6 @@ import { AuthService } from '../auth.service';
   styles: []
 })
 export class RegisterComponent implements OnInit {
-  cargando: boolean;
 
   constructor(
     public authService: AuthService
